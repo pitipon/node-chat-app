@@ -15,9 +15,31 @@ io.on('connection', (socket) => {
     console.log('New User Connected')
 
 
+    // socket.emit from Admin text welcome to the chat app
+    socket.emit('newMessage', {
+        from: 'Admin',
+        text: 'Welcome to the chat app'
+    })
+    // socket.broadcast.emit from Admin text New user joined
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin',
+        text: 'New user joined',
+        createAt: new Date().getTime()
+    })
+
     socket.on('createMessage', (message) => {
+
+        // Save to DB
         console.log('createMessage', message)
-        io.emit('newMessage', {
+
+        // io.emit('newMessage', {
+        //     from: message.from,
+        //     text: message.text,
+        //     createAt: new Date().getTime()
+        // })
+
+        // Broadcast new meesage to all users
+        socket.broadcast.emit('newMessage', {
             from: message.from,
             text: message.text,
             createAt: new Date().getTime()
