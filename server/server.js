@@ -3,7 +3,7 @@ const http = require('http')
 const express = require('express')
 const socketIO = require('socket.io')
 
-const { generateMessage } = require('./utils/message')
+const { generateMessage, generateLocationMessage } = require('./utils/message')
 const clientPath = path.join(__dirname, '../client')
 const port = process.env.PORT || 3000
 var app = express()
@@ -21,6 +21,7 @@ io.on('connection', function (socket) {
     // Socket will sne to all other clients except the newly created
     socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'))
 
+    // Create socket on for 'createMessage'
     socket.on('createMessage', (message, callback) => {
 
         // Save to DB
@@ -29,6 +30,17 @@ io.on('connection', function (socket) {
         io.emit('newMessage', generateMessage(message.from, message.text))
 
         callback(message)
+    })
+
+    // Create socket on for 'createLocationMessage'
+    socket.on('createLocationMessage', (coords, callback) => {
+
+        // Save to DB
+        console.log('save to DB', coords)
+
+        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude) )
+
+        callback(coords)
     })
 
     socket.on('disconnect', () => {
