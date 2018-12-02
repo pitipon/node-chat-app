@@ -12,19 +12,19 @@ var io = socketIO.listen(server)
 
 app.use(express.static(clientPath))
 
-io.on('connection', (socket) => {
+io.on('connection', function (socket) {
     console.log('New User Connected')
 
 
-    // socket.emit from Admin text welcome to the chat app
+    // Socket will send to all the clients
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'))
-    // socket.broadcast.emit from Admin text New user joined
+    // Socket will sne to all other clients except the newly created
     socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'))
 
     socket.on('createMessage', (message, callback) => {
 
         // Save to DB
-        console.log('createMessage', message)
+        console.log('save to DB', message)
 
         io.emit('newMessage', generateMessage(message.from, message.text))
 
